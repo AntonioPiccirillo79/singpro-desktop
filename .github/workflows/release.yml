@@ -5,7 +5,35 @@ on:
   workflow_dispatch:
 jobs:
   release:
-        strategy:
+      name: Build & Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install
+
+      - run: npm run build
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
       fail-fast: false
       matrix:
         os: [macos-latest, windows-latest]
